@@ -1,0 +1,10 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/samuel-krabbe/Code/Arq_II/Trab_2_tomasulo_simulator/systemc-2.3.3/src/sysc/packages/qt/md/iX86_64.s
+

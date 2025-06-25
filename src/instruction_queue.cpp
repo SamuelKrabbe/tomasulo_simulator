@@ -25,3 +25,11 @@ void instruction_queue::main()
         wait();
     }
 }
+
+bool instruction_queue::queue_is_empty(){
+    return pc == instruct_queue.size();
+}
+
+unsigned int instruction_queue::get_instruction_counter() {
+    return pc;
+}

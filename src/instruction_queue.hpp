@@ -15,6 +15,9 @@ public:
     instruction_queue(sc_module_name name, vector<string> inst_q, nana::listbox &instr);
     void main();
 
+    bool queue_is_empty();
+    unsigned int get_instruction_counter();
+
 private:
     unsigned int pc;
     vector<string> instruct_queue;

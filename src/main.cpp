@@ -896,19 +896,43 @@ int sc_main(int argc, char *argv[])
             show_message("Fila de instruções vazia","A fila de instruções está vazia. Insira um conjunto de instruções para iniciar.");
     });
 
-    clock_control.events().click([&]
-    {
-        if(top1.get_queue().queue_is_empty() && top1.get_rob().rob_is_empty())
+    clock_control.events().click([&] {
+        bool queue_empty = true;
+        bool rob_empty = true;
+
+        if (spec != 0) {
+            // Modo especulativo
+            queue_empty = top1.get_queue_rob_mode().queue_is_empty();
+            rob_empty = top1.get_rob().rob_is_empty();
+        } else {
+            // Modo simples
+            queue_empty = top1.get_queue_simple_mode().queue_is_empty();
+            rob_empty = true;
+        }
+
+        if (queue_empty && rob_empty) {
+            std::cout << "Fila e ROB vazios. Nada a executar.\n";
             return;
-        if(sc_is_running())
+        }
+
+        if (sc_is_running()) {
             sc_start();
+        }
     });
 
     run_all.events().click([&]{
-        // enquanto queue e rob nao estao vazios, roda ate o fim
-        while(!(top1.get_queue().queue_is_empty() && top1.get_rob().rob_is_empty())){
-            if(sc_is_running())
-                sc_start();
+        if (spec != 0) {
+            // Modo especulativo
+            while(!(top1.get_queue_rob_mode().queue_is_empty() && top1.get_rob().rob_is_empty())){
+                if(sc_is_running())
+                    sc_start();
+            }
+        } else {
+            // Modo simples
+            while(!top1.get_queue_simple_mode().queue_is_empty()){
+                if(sc_is_running())
+                    sc_start();
+            }
         }
 
         top1.metrics(cpu_freq, mode, bench_name, n_bits);

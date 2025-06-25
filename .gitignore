@@ -1,2 +1,59 @@
-tfsim
+# Compilados e temporários
+/build/
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+*.dylib
+*.log
+*.tmp
+*.swp
+
+# Arquivos de backup comuns
+*~
+*.bak
+
+# Arquivos gerados pelo SystemC
+systemc*/
+*.vcd
+*.wlf
+
+# Arquivos de métricas gerados automaticamente
 in/benchmarks/**/metrics.txt
+metrics/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# CLion / JetBrains
+.idea/
+
+# Arquivos de execução do sistema
+.DS_Store
+Thumbs.db
+
+# Arquivos gerados por Nana (ex: config temporário)
+nana/
+nana/**/debug.log
+
+# Arquivos temporários criados por editores
+*.autosave
+*.sublime-workspace
+*.sublime-project
+
+# Arquivos ocultos de controle de ambiente
+.env
+.env.*
+
+# Outros
+/tfsim*

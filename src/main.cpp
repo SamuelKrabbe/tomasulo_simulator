@@ -17,12 +17,12 @@ using std::vector;
 using std::map;
 using std::fstream;
 
-
 int sc_main(int argc, char *argv[])
 {
     using namespace nana;
     vector<string> instruction_queue;
     string bench_name = "";
+    string stored_metrics_text = "";
     int nadd,nmul,nls, n_bits, bpb_size, cpu_freq;
     nadd = 3;
     nmul = nls = 2;
@@ -43,6 +43,7 @@ int sc_main(int argc, char *argv[])
     listbox instruct(fm);
     listbox rob(fm);
     menubar mnbar(fm);
+    button metrics(fm);
     button start(fm);
     button run_all(fm);
     button clock_control(fm);
@@ -60,12 +61,13 @@ int sc_main(int argc, char *argv[])
     {"SLT",1},{"SGT", 1}};
     // Responsavel pelos modos de execução
     top top1("top");
+    metrics.caption("Metrics");
     start.caption("Start");
     clock_control.caption("Next cycle");
     run_all.caption("Run all");
     exit.caption("Exit");
     plc["rst"] << table;
-    plc["btns"] << start << clock_control << run_all << exit;
+    plc["btns"] << metrics << start << clock_control << run_all << exit;
     plc["memor"] << memory;
     plc["regs"] << reg;
     plc["rob"] << rob;
@@ -861,11 +863,17 @@ int sc_main(int argc, char *argv[])
         }
     }
 
+    metrics.enabled(false);
     clock_control.enabled(false);
     run_all.enabled(false);
+
+    metrics.events().click([&] {
+        metrics.enabled(false);
+        show_metrics_window(fm, stored_metrics_text);
+        metrics.enabled(true);
+    });
     
-    start.events().click([&]
-    {
+    start.events().click([&] {
         if(fila)
         {
             start.enabled(false);
@@ -911,7 +919,9 @@ int sc_main(int argc, char *argv[])
         }
 
         if (queue_empty && rob_empty) {
-            std::cout << "Fila e ROB vazios. Nada a executar.\n";
+            std::cout << "Fila e ROB vazios. Simulação finalizada.\n";
+            stored_metrics_text = top1.get_metrics_text(cpu_freq, mode, bench_name, n_bits);
+            metrics.enabled(true);
             return;
         }
 
@@ -936,6 +946,8 @@ int sc_main(int argc, char *argv[])
         }
 
         top1.metrics(cpu_freq, mode, bench_name, n_bits);
+        stored_metrics_text = top1.get_metrics_text(cpu_freq, mode, bench_name, n_bits);
+        metrics.enabled(true);
     });
 
     exit.events().click([]
@@ -943,6 +955,7 @@ int sc_main(int argc, char *argv[])
         sc_stop();
         API::exit();
     });
+
     fm.show();
     exec();
     return 0;

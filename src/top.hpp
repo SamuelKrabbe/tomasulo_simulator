@@ -37,6 +37,7 @@ public:
     reorder_buffer & get_rob() {return *rob;}
 
     void metrics(int cpu_freq, int mode, string bench_name, int n_bits);
+    string get_metrics_text(int cpu_freq, int mode, const std::string& bench_name, int n_bits);
 
 private:
     //Para simple(sem especulacao)

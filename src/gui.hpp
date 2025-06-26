@@ -11,7 +11,7 @@ extern const char* str_spec;
 
 extern const char*  str_nospec; 
 
-
 void set_spec(nana::place &plc, bool is_spec);
 bool add_instructions(std::ifstream &File,std::vector<std::string> &queue, nana::listbox &instruction_gui);
 void show_message(std::string message_title, std::string message);
+void show_metrics_window(nana::form& parent, const std::string& metrics_text);

@@ -52,3 +52,29 @@ bool add_instructions(ifstream &File,vector<string> &queue, nana::listbox &instr
     File.close();
     return true;
 }
+
+void show_metrics_window(nana::form& parent, const std::string& metrics_text) {
+    using namespace nana;
+
+    auto metrics_win = new form(API::make_center(400, 300));
+    metrics_win->caption("Simulation Metrics");
+
+    label* lbl = new label(*metrics_win);
+    lbl->format(true);
+    lbl->caption(metrics_text);
+    lbl->move({10, 10});
+    lbl->size({380, 280});
+    lbl->text_align(align::left, align_v::top);
+
+    parent.enabled(false);
+
+    metrics_win->events().unload([&, metrics_win] {
+        parent.enabled(true);
+        // delete metrics_win;
+    });
+
+    metrics_win->show();
+    API::modal_window(metrics_win->handle());
+    nana::API::refresh_window(metrics_win->handle());
+    nana::API::set_window_z_order(metrics_win->handle(), nullptr, nana::z_order_action::top);
+}

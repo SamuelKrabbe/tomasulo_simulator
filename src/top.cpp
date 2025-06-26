@@ -242,8 +242,7 @@ void top::rob_mode_bpb(int n_bits, int bpb_size, unsigned int nadd, unsigned int
 }
 
 void top::metrics(int cpu_freq, int mode, string bench_name, int n_bits) {
-
-    float hit_rate;
+    float hit_rate = 0.0;
     int tam_bpb = 0;
     int mem_count = 0;
     unsigned int total_instructions_exec = 0;
@@ -269,35 +268,86 @@ void top::metrics(int cpu_freq, int mode, string bench_name, int n_bits) {
         return;
     }
 
-    double cpi_medio = (double) ciclos / total_instructions_exec;
+    double cpi_medio = (double)ciclos / total_instructions_exec;
+    double t_cpu = (double)cpi_medio * total_instructions_exec * tempo_ciclo_clock_ns;
+    double mips = total_instructions_exec / (t_cpu * 1e-9 * 1e6);
 
-    double t_cpu = (double) cpi_medio * total_instructions_exec * tempo_ciclo_clock_ns;
+    cout << "\n\nMÉTRICAS:\n"
+         << "# Frequência CPU: " << cpu_freq << " MHz\n"
+         << "# Total de Instruções Executadas: " << total_instructions_exec << "\n"
+         << "# Ciclos: " << ciclos << "\n"
+         << "# CPI Médio: " << cpi_medio << "\n"
+         << "# t_CPU: " << t_cpu << " ns\n"
+         << "# MIPS: " << mips << " milhões de instruções por segundo\n"
+         << "# Acessos à memória: " << mem_count << "\n"
+         << "# Preditor: " << n_bits << " bits\n";
 
-    double mips = total_instructions_exec / (t_cpu * 1e-9 * 1e6); 
-
-    cout <<
-    "\n\n"
-    "MÉTRICAS:\n" <<
-    "# Frequência CPU: " << cpu_freq << " Mhz" << "\n" <<
-    "# Total de Instruções Executadas: " << total_instructions_exec << "\n" <<
-    "# Ciclos: " << ciclos << "\n" <<
-    "# CPI Médio: " << cpi_medio << "\n" <<
-    "# t_CPU: " << t_cpu << " ns" << "\n" <<
-    "# MIPS: " << mips << " milhões de instruções por segundo" << "\n" <<
-    "# Acessos a memoria: " << mem_count << "\n" <<
-    "# Preditor: " << n_bits << " bits" << endl;
-
-    if(mode == 1){
+    if (mode == 1) {
         hit_rate = get_rob().get_preditor().get_predictor_hit_rate();
-        cout << "# Taxa de sucesso - 1 Preditor: " << hit_rate << "%" << endl;
-    } else if(mode == 2){
+        cout << "# Taxa de sucesso - 1 Preditor: " << hit_rate << "%\n";
+    } else if (mode == 2) {
         hit_rate = get_rob().get_bpb().bpb_get_hit_rate();
         tam_bpb = get_rob().get_bpb().get_bpb_size();
-        cout << "# Taxa de sucesso - BPB[" << tam_bpb << "]: " << hit_rate << "%" << endl;
+        cout << "# Taxa de sucesso - BPB[" << tam_bpb << "]: " << hit_rate << "%\n";
     }
 
     dump_metrics(bench_name, cpu_freq, total_instructions_exec, ciclos, cpi_medio, t_cpu, mips,
                  mode, hit_rate, tam_bpb, mem_count, n_bits);
+}
+
+string top::get_metrics_text(int cpu_freq, int mode, const std::string& bench_name, int n_bits) {
+    std::ostringstream out;
+    float hit_rate = 0.0;
+    int tam_bpb = 0;
+    int mem_count = 0;
+    unsigned int total_instructions_exec = 0;
+
+    double tempo_ciclo_clock = 1 / static_cast<double>(cpu_freq * 1e6);
+    double tempo_ciclo_clock_ns = tempo_ciclo_clock * 1e9;
+    double ciclos = static_cast<double>((sc_time_stamp().to_double() / 1000) - 1);
+
+    if ((mode == 1 || mode == 2) && fila_r && rob) {
+        total_instructions_exec = fila_r->get_instruction_counter();
+        mem_count = rob->get_mem_count();
+    } else if (mode == 0 && fila) {
+        total_instructions_exec = fila->get_instruction_counter();
+    } else {
+        return "[Erro] Estruturas não inicializadas corretamente.\n";
+    }
+
+    if (total_instructions_exec == 0) {
+        return "[Aviso] Nenhuma instrução foi executada.\n";
+    }
+
+    double cpi_medio = (double)ciclos / total_instructions_exec;
+    double t_cpu = (double)cpi_medio * total_instructions_exec * tempo_ciclo_clock_ns;
+    double mips = total_instructions_exec / (t_cpu * 1e-9 * 1e6);
+
+    out << "MÉTRICAS\n";
+    out << "-----------------------------\n";
+    out << "Frequência CPU: " << cpu_freq << " MHz\n";
+    out << "Instruções Executadas: " << total_instructions_exec << "\n";
+    out << "Ciclos: " << ciclos << "\n";
+    out << "CPI Médio: " << cpi_medio << "\n";
+    out << "Tempo CPU (t_CPU): " << t_cpu << " ns\n";
+    out << "MIPS: " << mips << " milhões de instruções/s\n";
+    out << "Acessos à Memória: " << mem_count << "\n";
+    out << "Bits do Preditor: " << n_bits << "\n";
+
+    if (mode == 1) {
+        hit_rate = get_rob().get_preditor().get_predictor_hit_rate();
+        out << "Taxa de Acerto (1 Preditor): " << hit_rate << "%\n";
+    } else if (mode == 2) {
+        hit_rate = get_rob().get_bpb().bpb_get_hit_rate();
+        tam_bpb = get_rob().get_bpb().get_bpb_size();
+        out << "Taxa de Acerto (BPB[" << tam_bpb << "]): " << hit_rate << "%\n";
+    }
+
+    // mantém gravação em arquivo, se desejar
+    dump_metrics(bench_name, cpu_freq, total_instructions_exec, ciclos, cpi_medio, t_cpu, mips,
+                 mode, hit_rate, tam_bpb, mem_count, n_bits);
+
+    return out.str();
 }
 
 void top::dump_metrics(string bench_name, int cpu_freq, unsigned int total_instructions_exec,

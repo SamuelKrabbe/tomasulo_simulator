@@ -322,9 +322,7 @@ string top::get_metrics_text(int cpu_freq, int mode, const std::string& bench_na
     double cpi_medio = (double)ciclos / total_instructions_exec;
     double t_cpu = (double)cpi_medio * total_instructions_exec * tempo_ciclo_clock_ns;
     double mips = total_instructions_exec / (t_cpu * 1e-9 * 1e6);
-
-    out << "MÉTRICAS\n";
-    out << "-----------------------------\n";
+    
     out << "Frequência CPU: " << cpu_freq << " MHz\n";
     out << "Instruções Executadas: " << total_instructions_exec << "\n";
     out << "Ciclos: " << ciclos << "\n";

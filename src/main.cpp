@@ -20,6 +20,7 @@ using std::fstream;
 int sc_main(int argc, char *argv[])
 {
     using namespace nana;
+
     vector<string> instruction_queue;
     string bench_name = "";
     string stored_metrics_text = "";
@@ -30,18 +31,29 @@ int sc_main(int argc, char *argv[])
     bpb_size = 4;
     cpu_freq = 500; // definido em Mhz - 500Mhz default
     std::vector<int> sizes;
+
     bool spec = false;
     int mode = 0;
     bool fila = false;
     ifstream inFile;
+
     form fm(API::make_center(1024,700));
     place plc(fm);
     place upper(fm);
     place lower(fm);
-    listbox table(fm);
-    listbox reg(fm);
-    listbox instruct(fm);
-    listbox rob(fm);
+
+    nana::panel<true> panel_instr(fm);
+    nana::panel<true> panel_rst(fm);
+    nana::panel<true> panel_regs(fm);
+    nana::panel<true> panel_rob(fm);
+    nana::panel<true> panel_memor(fm);
+
+    listbox table(panel_rst);
+    listbox reg(panel_regs);
+    listbox instruct(panel_instr);
+    listbox rob(panel_rob);
+    grid memory(panel_memor, rectangle(), 10, 50);
+
     menubar mnbar(fm);
     button metrics(fm);
     button start(fm);
@@ -50,15 +62,17 @@ int sc_main(int argc, char *argv[])
     button exit(fm);
     group clock_group(fm);
     label clock_count(clock_group);
+
     fm.caption("TFSim");
     clock_group.caption("Ciclo");
     clock_group.div("count");
-    grid memory(fm,rectangle(),10,50);
+
     // Tempo de latencia de uma instrucao
     // Novas instrucoes devem ser inseridas manualmente aqui
     map<string,int> instruct_time{{"DADD",4},{"DADDI",4},{"DSUB",6},
     {"DSUBI",6},{"DMUL",10},{"DDIV",16},{"MEM",2},
     {"SLT",1},{"SGT", 1}};
+
     // Responsavel pelos modos de execução
     top top1("top");
     metrics.caption("Metrics");
@@ -66,15 +80,47 @@ int sc_main(int argc, char *argv[])
     clock_control.caption("Next cycle");
     run_all.caption("Run all");
     exit.caption("Exit");
-    plc["rst"] << table;
+
     plc["btns"] << metrics << start << clock_control << run_all << exit;
-    plc["memor"] << memory;
-    plc["regs"] << reg;
-    plc["rob"] << rob;
-    plc["instr"] << instruct;
+    plc["rst"] << panel_rst;
+    plc["memor"] << panel_memor;
+    plc["regs"] << panel_regs;
+    plc["rob"] << panel_rob;
+    plc["instr"] << panel_instr;
+    // plc["rst"] << table;
+    // plc["memor"] << memory;
+    // plc["regs"] << reg;
+    // plc["rob"] << rob;
+    // plc["instr"] << instruct;
     plc["clk_c"] << clock_group;
     clock_group["count"] << clock_count;
     clock_group.collocate();
+
+    // Layout interno com margem
+    nana::place plc_instr(panel_instr);
+    plc_instr.div("<margin=[0,0,10,0] instr>");
+    plc_instr["instr"] << instruct;
+    plc_instr.collocate();
+
+    nana::place plc_rst(panel_rst);
+    plc_rst.div("<margin=[0,0,10,0] rst>");
+    plc_rst["rst"] << table;
+    plc_rst.collocate();
+
+    nana::place plc_regs(panel_regs);
+    plc_regs.div("<margin=[0,0,10,0] regs>");
+    plc_regs["regs"] << reg;
+    plc_regs.collocate();
+
+    nana::place plc_rob(panel_rob);
+    plc_rob.div("<margin=[0,0,10,0] rob>");
+    plc_rob["rob"] << rob;
+    plc_rob.collocate();
+
+    nana::place plc_mem(panel_memor);
+    plc_mem.div("<margin=[0,0,10,0] memor>");
+    plc_mem["memor"] << memory;
+    plc_mem.collocate();
 
     spec = false;
     //set_spec eh so visual
@@ -84,8 +130,10 @@ int sc_main(int argc, char *argv[])
     mnbar.push_back("Opções");
     menu &op = mnbar.at(0);
     //menu::item_proxy spec_ip = 
+
     op.append("Especulação");
     auto spec_sub = op.create_sub_menu(0);
+
     // Modo com 1 preditor para todos os branchs
     spec_sub->append("1 Preditor", [&](menu::item_proxy &ip)
     {

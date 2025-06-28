@@ -13,8 +13,39 @@
 #include "gui.hpp"
 #include "top.hpp"
 #include "menu_handlers.hpp"
+#include <unistd.h>
+#include <libgen.h>
 
 using namespace nana;
+
+const char* get_base_path(const char **argv) {
+    // 1. Try environment variable first
+    const char* env_path = getenv("TFSIM_BASE_PATH");
+    if (env_path != NULL && env_path[0] != '\0') {
+        return env_path;
+    }
+
+    // 2. Fall back to argv[0] derivation
+    static char base_path[PATH_MAX];
+    char executable_path[PATH_MAX];
+
+    // Get path to executable (Linux/macOS specific)
+    ssize_t len = readlink("/proc/self/exe", executable_path, sizeof(executable_path)-1);
+    if (len == -1) {
+        // Fallback for systems without /proc/self/exe
+        strncpy(executable_path, argv[0], sizeof(executable_path)-1);
+        executable_path[sizeof(executable_path)-1] = '\0';
+    } else {
+        executable_path[len] = '\0';
+    }
+
+    // Get directory containing executable
+    char* dir = dirname(executable_path);
+    strncpy(base_path, dir, sizeof(base_path)-1);
+    base_path[sizeof(base_path)-1] = '\0';
+
+    return base_path;
+}
 
 void setup_main_menu(
     nana::menu& options_menu, bool& spec, int& mode,
@@ -26,25 +57,18 @@ void setup_main_menu(
     nana::listbox& instruct, nana::listbox& reg, nana::grid& memory,
     std::string& bench_name,
     nana::menu*& spec_sub_menu, nana::menu*& config_sub,
-    nana::menu*& verify_sub, nana::menu*& bench_sub
+    nana::menu*& verify_sub, nana::menu*& bench_sub,
+    const char **argv
 ) {
-    // options_menu.append("Especulação");
-    // spec_sub_menu = options_menu.create_sub_menu(0);
     setup_spec_menu(*spec_sub_menu, spec, mode, plc);
 
-    // options_menu.append("Modificar valores...");
-    // config_sub = options_menu.create_sub_menu(1);
     setup_config_menu(*config_sub, fm, bpb_size, n_bits, nadd, nmul, nls, cpu_freq,
                       instruct_time, instruction_queue, inFile, fila, instruct, reg, memory);
 
-    // options_menu.append("Verificar conteúdo...");
-    // verify_sub = options_menu.create_sub_menu(2);
     setup_verification_menu(*verify_sub, fm, inFile, reg, memory);
 
-    // options_menu.append("Benchmarks");
-    // bench_sub = options_menu.create_sub_menu(3);
     setup_benchmark_menu(*bench_sub, bench_name, fm, instruction_queue,
-                         inFile, fila, instruct, reg, memory);
+                         inFile, fila, instruct, reg, memory, argv);
 }
 
 void setup_spec_menu(menu& spec_sub, bool& spec, int& mode, place& plc) {
@@ -267,13 +291,14 @@ void setup_verification_menu(menu& verify_sub, form& fm, ifstream& inFile,
         }
     });
 }
-
 void setup_benchmark_menu(
     menu& bench_sub, string& bench_name, form& fm, 
     std::vector<std::string>& instruction_queue,
     std::ifstream& inFile, bool& fila, listbox& instruct,
-    listbox& reg, grid& memory
+    listbox& reg, grid& memory, const char **argv
 ) {
+    std::string base_path = std::string(get_base_path(argv));
+
     bench_sub.append("All", [&](menu::item_proxy &ip) {
         struct Benchmark {
             std::string name;
@@ -283,16 +308,16 @@ void setup_benchmark_menu(
         };
 
         std::vector<Benchmark> benchmarks = {
-            {"fibonacci", "in/benchmarks/fibonacci/fibonacci.txt", "", ""},
-            {"division_stall", "in/benchmarks/division_stall.txt", "", ""},
-            {"store_stress", "in/benchmarks/store_stress/store_stress.txt", "", ""},
-            {"res_stations_stall", "in/benchmarks/res_stations_stall.txt", "", ""},
-            {"linear_search", "in/benchmarks/linear_search/linear_search.txt", "in/benchmarks/linear_search/memory.txt", "in/benchmarks/linear_search/regi_i.txt"},
-            {"binary_search", "in/benchmarks/binary_search/binary_search.txt", "in/benchmarks/binary_search/memory.txt", "in/benchmarks/binary_search/regs.txt"},
-            {"matriz_search", "in/benchmarks/matriz_search/matriz_search.txt", "in/benchmarks/matriz_search/memory.txt", "in/benchmarks/matriz_search/regs.txt"},
-            {"bubble_sort", "in/benchmarks/bubble_sort/bubble_sort.txt", "in/benchmarks/bubble_sort/memory.txt", "in/benchmarks/bubble_sort/regs.txt"},
-            {"insertion_sort", "in/benchmarks/insertion_sort/insertion_sort.txt", "in/benchmarks/insertion_sort/memory.txt", "in/benchmarks/insertion_sort/regs.txt"},
-            {"tick_tack", "in/benchmarks/tick_tack/tick_tack.txt", "", "in/benchmarks/tick_tack/regs.txt"}
+            {"fibonacci", base_path + "in/benchmarks/fibonacci/fibonacci.txt", "", ""},
+            {"division_stall", base_path + "in/benchmarks/division_stall.txt", "", ""},
+            {"store_stress", base_path + "in/benchmarks/store_stress/store_stress.txt", "", ""},
+            {"res_stations_stall", base_path + "in/benchmarks/res_stations_stall.txt", "", ""},
+            {"linear_search", base_path + "in/benchmarks/linear_search/linear_search.txt", base_path + "in/benchmarks/linear_search/memory.txt", base_path + "in/benchmarks/linear_search/regi_i.txt"},
+            {"binary_search", base_path + "in/benchmarks/binary_search/binary_search.txt", base_path + "in/benchmarks/binary_search/memory.txt", base_path + "in/benchmarks/binary_search/regs.txt"},
+            {"matriz_search", base_path + "in/benchmarks/matriz_search/matriz_search.txt", base_path + "in/benchmarks/matriz_search/memory.txt", base_path + "in/benchmarks/matriz_search/regs.txt"},
+            {"bubble_sort", base_path + "in/benchmarks/bubble_sort/bubble_sort.txt", base_path + "in/benchmarks/bubble_sort/memory.txt", base_path + "in/benchmarks/bubble_sort/regs.txt"},
+            {"insertion_sort", base_path + "in/benchmarks/insertion_sort/insertion_sort.txt", base_path + "in/benchmarks/insertion_sort/memory.txt", base_path + "in/benchmarks/insertion_sort/regs.txt"},
+            {"tick_tack", base_path + "in/benchmarks/tick_tack/tick_tack.txt", "", base_path + "in/benchmarks/tick_tack/regs.txt"}
         };
 
         for (const auto &b : benchmarks) {

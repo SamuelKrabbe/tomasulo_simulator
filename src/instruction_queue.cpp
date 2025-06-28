@@ -27,7 +27,7 @@ void instruction_queue::main()
 }
 
 bool instruction_queue::queue_is_empty(){
-    return pc == instruct_queue.size() == 0;
+    return (pc == instruct_queue.size()) == 0;
 }
 
 unsigned int instruction_queue::get_instruction_counter() {

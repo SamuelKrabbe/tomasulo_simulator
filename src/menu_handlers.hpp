@@ -29,7 +29,8 @@ void setup_main_menu(
     nana::listbox& instruct, nana::listbox& reg, nana::grid& memory,
     std::string& bench_name,
     nana::menu*& spec_sub_menu, nana::menu*& config_sub,
-    nana::menu*& verify_sub, nana::menu*& bench_sub
+    nana::menu*& verify_sub, nana::menu*& bench_sub, 
+    const char **argv
 );
 void setup_spec_menu(menu& spec_sub, bool& spec, int& mode, place& plc);
 void setup_config_menu(
@@ -52,5 +53,5 @@ void setup_benchmark_menu(
     menu& bench_sub, string& bench_name, form& fm, 
     std::vector<std::string>& instruction_queue,
     std::ifstream& inFile, bool& fila, listbox& instruct,
-    listbox& reg, grid& memory
+    listbox& reg, grid& memory, const char **argv
 );

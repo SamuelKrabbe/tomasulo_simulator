@@ -29,7 +29,6 @@ metrics/
 CMakeCache.txt
 CMakeFiles/
 cmake_install.cmake
-Makefile
 
 # VS Code e CLion
 .vscode/

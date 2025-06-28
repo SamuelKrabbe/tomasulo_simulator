@@ -1,3 +1,5 @@
+#pragma once
+
 #include "interfaces.hpp"
 #include<map>
 #include<vector>

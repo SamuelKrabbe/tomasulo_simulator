@@ -21,7 +21,7 @@ systemc*/
 *.vcd
 *.wlf
 
-# Arquivos de métricas gerados automaticamente
+# Arquivos de métricas
 in/benchmarks/**/metrics.txt
 metrics/
 
@@ -31,29 +31,26 @@ CMakeFiles/
 cmake_install.cmake
 Makefile
 
-# VS Code
+# VS Code e CLion
 .vscode/
-*.code-workspace
-
-# CLion / JetBrains
 .idea/
+*.code-workspace
 
 # Arquivos de execução do sistema
 .DS_Store
 Thumbs.db
 
-# Arquivos gerados por Nana (ex: config temporário)
-nana/
-nana/**/debug.log
+# Arquivos gerados por Nana (compilados, logs, etc.)
+nana/**/*
 
 # Arquivos temporários criados por editores
 *.autosave
 *.sublime-workspace
 *.sublime-project
 
-# Arquivos ocultos de controle de ambiente
+# Arquivos de ambiente
 .env
 .env.*
 
-# Outros
+# Executável principal do simulador
 /tfsim*

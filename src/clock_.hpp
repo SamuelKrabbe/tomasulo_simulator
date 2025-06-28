@@ -1,4 +1,5 @@
 #pragma once
+
 #include "bus.hpp"
 #include<nana/gui/widgets/label.hpp>
 

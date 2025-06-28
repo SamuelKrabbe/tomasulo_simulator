@@ -1,3 +1,5 @@
+#pragma once
+
 #include<memory>
 #include <iostream>
 #include <fstream>
@@ -10,6 +12,7 @@
 #include "register_bank.hpp"
 #include "memory.hpp"
 #include "instruction_queue.hpp"
+
 //Bibliotecas para especulaçao
 #include "issue_control_rob.hpp"
 #include "res_vector_rob.hpp"

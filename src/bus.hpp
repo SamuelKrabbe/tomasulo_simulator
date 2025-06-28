@@ -1,4 +1,5 @@
 #pragma once
+
 #include "interfaces.hpp"
 
 class bus: public sc_channel, public write_if, public read_if

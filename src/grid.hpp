@@ -1,4 +1,5 @@
 #pragma once
+
 #include <nana/gui/widgets/panel.hpp>
 #include <nana/gui/widgets/listbox.hpp>
 

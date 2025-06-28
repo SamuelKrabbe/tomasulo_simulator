@@ -1,3 +1,0 @@
-/home/samuel-krabbe/Code/Arq_II/Trab_2_tomasulo_simulator/nana/built/CMakeFiles/nana.dir
-/home/samuel-krabbe/Code/Arq_II/Trab_2_tomasulo_simulator/nana/built/CMakeFiles/edit_cache.dir
-/home/samuel-krabbe/Code/Arq_II/Trab_2_tomasulo_simulator/nana/built/CMakeFiles/rebuild_cache.dir

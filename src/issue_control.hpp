@@ -1,6 +1,9 @@
+#pragma once
+
 #include "interfaces.hpp"
-#include<map>
-#include<vector>
+#include <map>
+#include <vector>
+#include <string>
 
 using std::map;
 using std::vector;

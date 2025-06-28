@@ -1,3 +1,5 @@
+#pragma once
+
 #include "general.hpp"
 #include "interfaces.hpp"
 #include "branch_predictor.hpp"

@@ -1,3 +1,5 @@
+#pragma once
+
 #include<systemc.h>
 #include<vector>
 #include "interfaces.hpp"

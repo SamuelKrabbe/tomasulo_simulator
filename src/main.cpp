@@ -142,7 +142,7 @@ int sc_main(int argc, char *argv[])
     parse_arguments(argc, argv, instruction_queue, instruct, reg, memory, instruct_time, nadd, nmul, nls, fila, fm);
 
     // Eventos
-    // metrics.enabled(false);
+    metrics.enabled(false);
     clock_control.enabled(false);
     run_all.enabled(false);
 

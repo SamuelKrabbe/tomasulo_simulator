@@ -23,8 +23,19 @@
 #include "instruction_queue_rob.hpp"
 #include "address_unit.hpp"
 
-
 using std::unique_ptr;
+
+struct MetricsResult {
+    int cpu_freq;
+    unsigned int total_instructions_exec;
+    double ciclos;
+    double cpi_medio;
+    double t_cpu;
+    double mips;
+    int mem_count;
+    float hit_rate;
+    int tam_bpb;
+};
 
 class top: public sc_module
 {
@@ -38,8 +49,11 @@ public:
     instruction_queue & get_queue() {return *fila;}
     reorder_buffer & get_rob() {return *rob;}
 
+    MetricsResult compute_metrics(int cpu_freq, int mode, int n_bits);
     void metrics(int cpu_freq, int mode, string bench_name, int n_bits);
     string get_metrics_text(int cpu_freq, int mode, const std::string& bench_name, int n_bits);
+    void dump_metrics(string bench_name, MetricsResult result);
+    void dump_metrics_csv(string bench_name, MetricsResult result);
 
 private:
     //Para simple(sem especulacao)
@@ -66,8 +80,4 @@ private:
     unique_ptr<register_bank_rob> rb_r;
     unique_ptr<memory_rob> mem_r;
     unique_ptr<instruction_queue_rob> fila_r;
-
-    void dump_metrics(string bench_name, int cpu_freq, unsigned int total_instructions_exec,
-                       double ciclos, double cpi_medio, double t_cpu, double mips, int mode,
-                       float hit_rate, int tam_bpb, int mem_count, int n_bits);
 };

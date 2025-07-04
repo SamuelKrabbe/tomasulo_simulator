@@ -15,7 +15,7 @@ RUN apt-get update && \
 WORKDIR /opt/TFSim
 ADD src ./src/
 ADD obj ./obj/
-COPY  Makefile get_dep.sh .
+COPY  Makefile get_dep.sh ./
 RUN sh get_dep.sh
 RUN make
 

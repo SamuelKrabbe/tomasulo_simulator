@@ -1,0 +1,2 @@
+Benchmark,Frequência_CPU_MHz,Instruções_Executadas,Ciclos,CPI_Médio,t_CPU_ns,MIPS,Acessos_memória,Preditor_bits,Taxa_sucesso
+matriz_search,500,337431000,-1,-2.96357e-09,-2,-1.68716e+11,0,0,0

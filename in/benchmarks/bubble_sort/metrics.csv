@@ -1,0 +1,2 @@
+Benchmark,Frequência_CPU_MHz,Instruções_Executadas,Ciclos,CPI_Médio,t_CPU_ns,MIPS,Acessos_memória,Preditor_bits,Taxa_sucesso
+bubble_sort,500,339075576,-1,-2.9492e-09,-2,-1.69538e+11,0,0,0

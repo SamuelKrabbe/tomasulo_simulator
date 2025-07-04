@@ -10,11 +10,11 @@
 #include <nana/gui/widgets/menubar.hpp>
 #include <nana/gui/widgets/group.hpp>
 #include <sstream>
+#include <unistd.h>
+#include <libgen.h>
 #include "gui.hpp"
 #include "top.hpp"
 #include "menu_handlers.hpp"
-#include <unistd.h>
-#include <libgen.h>
 
 using namespace nana;
 
@@ -57,7 +57,7 @@ void setup_main_menu(
     nana::listbox& instruct, nana::listbox& reg, nana::grid& memory,
     std::string& bench_name,
     nana::menu*& spec_sub_menu, nana::menu*& config_sub,
-    nana::menu*& verify_sub, nana::menu*& bench_sub,
+    nana::menu*& verify_sub, nana::menu*& bench_sub, 
     const char **argv
 ) {
     setup_spec_menu(*spec_sub_menu, spec, mode, plc);
@@ -291,79 +291,14 @@ void setup_verification_menu(menu& verify_sub, form& fm, ifstream& inFile,
         }
     });
 }
+
 void setup_benchmark_menu(
-    menu& bench_sub, string& bench_name, form& fm, 
+    nana::menu& bench_sub, std::string& bench_name, nana::form& fm, 
     std::vector<std::string>& instruction_queue,
-    std::ifstream& inFile, bool& fila, listbox& instruct,
-    listbox& reg, grid& memory, const char **argv
+    std::ifstream& inFile, bool& fila, nana::listbox& instruct,
+    nana::listbox& reg, nana::grid& memory, 
+    const char **argv
 ) {
-    std::string base_path = std::string(get_base_path(argv));
-
-    bench_sub.append("All", [&](menu::item_proxy &ip) {
-        struct Benchmark {
-            std::string name;
-            std::string instructionPath;
-            std::string memoryPath;
-            std::string regPath;
-        };
-
-        std::vector<Benchmark> benchmarks = {
-            {"fibonacci", base_path + "in/benchmarks/fibonacci/fibonacci.txt", "", ""},
-            {"division_stall", base_path + "in/benchmarks/division_stall.txt", "", ""},
-            {"store_stress", base_path + "in/benchmarks/store_stress/store_stress.txt", "", ""},
-            {"res_stations_stall", base_path + "in/benchmarks/res_stations_stall.txt", "", ""},
-            {"linear_search", base_path + "in/benchmarks/linear_search/linear_search.txt", base_path + "in/benchmarks/linear_search/memory.txt", base_path + "in/benchmarks/linear_search/regi_i.txt"},
-            {"binary_search", base_path + "in/benchmarks/binary_search/binary_search.txt", base_path + "in/benchmarks/binary_search/memory.txt", base_path + "in/benchmarks/binary_search/regs.txt"},
-            {"matriz_search", base_path + "in/benchmarks/matriz_search/matriz_search.txt", base_path + "in/benchmarks/matriz_search/memory.txt", base_path + "in/benchmarks/matriz_search/regs.txt"},
-            {"bubble_sort", base_path + "in/benchmarks/bubble_sort/bubble_sort.txt", base_path + "in/benchmarks/bubble_sort/memory.txt", base_path + "in/benchmarks/bubble_sort/regs.txt"},
-            {"insertion_sort", base_path + "in/benchmarks/insertion_sort/insertion_sort.txt", base_path + "in/benchmarks/insertion_sort/memory.txt", base_path + "in/benchmarks/insertion_sort/regs.txt"},
-            {"tick_tack", base_path + "in/benchmarks/tick_tack/tick_tack.txt", "", base_path + "in/benchmarks/tick_tack/regs.txt"}
-        };
-
-        for (const auto &b : benchmarks) {
-            bench_name = b.name;
-            inFile.open(b.instructionPath);
-            if (!add_instructions(inFile, instruction_queue, instruct)) {
-                show_message("Erro", "Não foi possível abrir " + b.instructionPath);
-                inFile.close();
-                continue;
-            } else {
-                fila = true;
-            }
-            inFile.close();
-
-            // Carrega memória se necessário
-            if (!b.memoryPath.empty()) {
-                inFile.open(b.memoryPath);
-                if (inFile.is_open()) {
-                    int i = 0, value;
-                    while (inFile >> value && i < 500)
-                        memory.Set(i++, std::to_string(value));
-                    for (; i < 500; ++i)
-                        memory.Set(i, "0");
-                    inFile.close();
-                } else {
-                    show_message("Erro", "Não foi possível abrir " + b.memoryPath);
-                }
-            }
-
-            // Carrega registradores se necessário
-            if (!b.regPath.empty()) {
-                inFile.open(b.regPath);
-                if (inFile.is_open()) {
-                    auto reg_gui = reg.at(0);
-                    int i = 0, value;
-                    while (inFile >> value && i < 32)
-                        reg_gui.at(i++).text(1, std::to_string(value));
-                    for (; i < 32; ++i)
-                        reg_gui.at(i).text(1, "0");
-                    inFile.close();
-                } else {
-                    show_message("Erro", "Não foi possível abrir " + b.regPath);
-                }
-            }
-        }
-    });
     bench_sub.append("Fibonacci",[&](menu::item_proxy &ip){
         string path = "in/benchmarks/fibonacci/fibonacci.txt";
         bench_name = "fibonacci";        

@@ -23,7 +23,7 @@ extern const char*  str_nospec;
 void set_spec(place &plc, bool is_spec);
 bool add_instructions(ifstream &File, vector<std::string> &queue, listbox &instruction_gui);
 void show_message(std::string message_title, std::string message);
-void show_metrics_window(form& parent, const std::string& metrics_text);
+void show_metrics_window(form& parent);
 
 // Setup dos Headers
 void setup_register_headers(listbox& reg);

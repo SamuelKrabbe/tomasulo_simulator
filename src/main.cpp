@@ -24,7 +24,6 @@ int sc_main(int argc, char *argv[])
 
     vector<string> instruction_queue;
     string bench_name = "";
-    string stored_metrics_text = "";
     int nadd = 3, nmul = 2, nls = 2, n_bits = 2, bpb_size = 4, cpu_freq = 500;
     vector<int> sizes;
     bool spec = false;
@@ -143,13 +142,13 @@ int sc_main(int argc, char *argv[])
     parse_arguments(argc, argv, instruction_queue, instruct, reg, memory, instruct_time, nadd, nmul, nls, fila, fm);
 
     // Eventos
-    metrics.enabled(false);
+    // metrics.enabled(false);
     clock_control.enabled(false);
     run_all.enabled(false);
 
     metrics.events().click([&] {
         metrics.enabled(false);
-        show_metrics_window(fm, stored_metrics_text);
+        show_metrics_window(fm);
         metrics.enabled(true);
     });
     
@@ -205,7 +204,7 @@ int sc_main(int argc, char *argv[])
         }
 
         if (queue_empty && rob_empty) {
-            stored_metrics_text = top1.get_metrics_text(cpu_freq, mode, bench_name, n_bits);
+            top1.metrics(cpu_freq, mode, bench_name, n_bits);
             metrics.enabled(true);
         }
 
@@ -224,7 +223,6 @@ int sc_main(int argc, char *argv[])
         }
 
         top1.metrics(cpu_freq, mode, bench_name, n_bits);
-        stored_metrics_text = top1.get_metrics_text(cpu_freq, mode, bench_name, n_bits);
         metrics.enabled(true);
     });
 

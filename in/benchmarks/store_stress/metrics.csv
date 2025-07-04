@@ -1,0 +1,2 @@
+Benchmark,Frequência_CPU_MHz,Instruções_Executadas,Ciclos,CPI_Médio,t_CPU_ns,MIPS,Acessos_memória,Preditor_bits,Taxa_sucesso
+store_stress,500,1720,-1,-0.000581395,-2,-860000,0,0,0

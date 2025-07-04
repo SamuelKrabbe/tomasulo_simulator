@@ -1,0 +1,2 @@
+Benchmark,Frequência_CPU_MHz,Instruções_Executadas,Ciclos,CPI_Médio,t_CPU_ns,MIPS,Acessos_memória,Preditor_bits,Taxa_sucesso
+division_stall,500,338804288,-1,-2.95156e-09,-2,-1.69402e+11,0,0,0

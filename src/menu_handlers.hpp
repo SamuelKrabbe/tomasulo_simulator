@@ -53,5 +53,6 @@ void setup_benchmark_menu(
     menu& bench_sub, string& bench_name, form& fm, 
     std::vector<std::string>& instruction_queue,
     std::ifstream& inFile, bool& fila, listbox& instruct,
-    listbox& reg, grid& memory, const char **argv
+    listbox& reg, grid& memory, 
+    const char **argv
 );

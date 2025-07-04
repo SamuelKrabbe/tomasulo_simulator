@@ -1,0 +1,2 @@
+Benchmark,Frequência_CPU_MHz,Instruções_Executadas,Ciclos,CPI_Médio,t_CPU_ns,MIPS,Acessos_memória,Preditor_bits,Taxa_sucesso
+,500,8,26,3.25,52,153.846,0,0,-nan
